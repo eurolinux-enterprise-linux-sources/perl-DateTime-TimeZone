@@ -1,6 +1,6 @@
 Name:           perl-DateTime-TimeZone
 Version:        1.63
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Time zone object base class and factory
 License:        GPL+ or Artistic
 Group:          Development/Libraries
@@ -87,6 +87,9 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.63-2
+- Mass rebuild 2013-12-27
+
 * Tue Oct 29 2013 Petr Pisar <ppisar@redhat.com> - 1.63-1
 - update to latest upstream version - Olson 2013h (bug #1024234)
 
