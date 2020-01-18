@@ -1,11 +1,5 @@
 package DateTime::TimeZone::OlsonDB::Rule;
-{
-  $DateTime::TimeZone::OlsonDB::Rule::VERSION = '1.63';
-}
-BEGIN {
-  $DateTime::TimeZone::OlsonDB::Rule::AUTHORITY = 'cpan:DROLSKY';
-}
-
+$DateTime::TimeZone::OlsonDB::Rule::VERSION = '1.70';
 use strict;
 use warnings;
 

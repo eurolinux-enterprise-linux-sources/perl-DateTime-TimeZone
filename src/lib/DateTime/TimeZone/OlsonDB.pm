@@ -1,11 +1,5 @@
 package DateTime::TimeZone::OlsonDB;
-{
-  $DateTime::TimeZone::OlsonDB::VERSION = '1.63';
-}
-BEGIN {
-  $DateTime::TimeZone::OlsonDB::AUTHORITY = 'cpan:DROLSKY';
-}
-
+$DateTime::TimeZone::OlsonDB::VERSION = '1.70';
 use strict;
 use warnings;
 
@@ -39,7 +33,7 @@ sub parse_file {
     my $self = shift;
     my $file = shift;
 
-    open my $fh, "<$file"
+    open my $fh, '<', $file
         or die "Cannot read $file: $!";
 
     while (<$fh>) {
@@ -58,7 +52,7 @@ sub _parse_line {
     # remove any comments at the end of the line
     $line =~ s/\s*#.+$//;
 
-    if ( $self->{in_zone} && $line =~ /^\t/ ) {
+    if ( $self->{in_zone} && $line =~ /^[ \t]/ ) {
         $self->_parse_zone( $line, $self->{in_zone} );
         return;
     }
@@ -308,13 +302,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 DateTime::TimeZone::OlsonDB - An object to represent an Olson time zone database
 
 =head1 VERSION
 
-version 1.63
+version 1.70
 
 =head1 SYNOPSIS
 
@@ -353,7 +349,7 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Dave Rolsky.
+This software is copyright (c) 2014 by Dave Rolsky.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

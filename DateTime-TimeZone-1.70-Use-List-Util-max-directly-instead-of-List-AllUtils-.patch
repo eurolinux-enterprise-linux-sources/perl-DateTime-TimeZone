@@ -1,0 +1,25 @@
+From 539066aad4edeb1cacc0ec9e0cc52caa8311a84c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Mon, 10 Jul 2017 14:32:38 +0200
+Subject: [PATCH] Use List::Util::max directly instead of List::AllUtils::max
+
+---
+ tools/parse_olson | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/parse_olson b/tools/parse_olson
+index f9597ed..c948de8 100755
+--- a/tools/parse_olson
++++ b/tools/parse_olson
+@@ -16,7 +16,7 @@ use File::Find::Rule;
+ use File::Path;
+ use File::Spec;
+ use Getopt::Long;
+-use List::AllUtils qw( max );
++use List::Util qw( max );
+ use Locale::Country 3.11 qw( code2country );
+ 
+ $Data::Dumper::Indent   = 1;
+-- 
+1.8.3.1
+

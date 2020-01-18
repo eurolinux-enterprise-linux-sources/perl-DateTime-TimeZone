@@ -1,0 +1,41 @@
+From cbca7770b9ead257b43f073b09abea3bd400ac0e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Tue, 11 Jul 2017 14:09:46 +0200
+Subject: [PATCH] Recognize short zone names starting with a sign
+
+Since tzdata 2017a, Africa/Accra uses GMT/+0020 short names and the conversion
+script from DateTime-TimeZones-1.96 adds support for this syntax.
+---
+ lib/DateTime/TimeZone/OlsonDB/Change.pm | 2 +-
+ tools/tests_from_zdump                  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/DateTime/TimeZone/OlsonDB/Change.pm b/lib/DateTime/TimeZone/OlsonDB/Change.pm
+index 5bebbfa..b312f97 100644
+--- a/lib/DateTime/TimeZone/OlsonDB/Change.pm
++++ b/lib/DateTime/TimeZone/OlsonDB/Change.pm
+@@ -43,7 +43,7 @@ sub new {
+     $p{is_dst} = 1 if $p{rule} && $p{rule}->offset_from_std;
+     $p{is_dst} = 1 if $p{observance}->offset_from_std;
+ 
+-    if ( $p{short_name} =~ m{(\w+)/(\w+)} ) {
++    if ( $p{short_name} =~ m{([\-\+\w]+)/([\-\+\w]+)} ) {
+         $p{short_name} = $p{is_dst} ? $2 : $1;
+     }
+ 
+diff --git a/tools/tests_from_zdump b/tools/tests_from_zdump
+index b013b7c..03465ee 100755
+--- a/tools/tests_from_zdump
++++ b/tools/tests_from_zdump
+@@ -147,7 +147,7 @@ sub make_test_file {
+                             \s+
+                             (\d\d\d\d)    # local year
+                             \s+
+-                            (\w+)         # local short name
++                            ([\-\+\w]+)   # local short name
+                             \s+
+                             isdst=(1|0)
+                             \s+
+-- 
+1.8.3.1
+

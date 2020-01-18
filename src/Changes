@@ -1,3 +1,48 @@
+1.70    2014-06-01
+
+- Unset $ENV{TZ} in t/04local..t test to avoid interference from
+  system. Reported by Mark Gardner. RT #96083.
+
+- This release is based on version 2014d of the IANA database, but there are
+  no data changes from 2014c.
+
+
+1.69    2014-05-13
+
+- Don't run tests for Unix on non-Unix boxes.
+
+
+1.68    2014-05-13
+
+- The last release was missing some test changes I made on another
+  machine. Doh.
+
+
+1.67    2014-05-13
+
+- I accidentally skipped 1.66, don't read anything into the 0.02 version bump
+  here.
+
+- This release is based on version 2014c of the IANA database (I skipped 2014b
+  for lack of debugging time). This release includes contemporary changes for
+  Crimea and Troll Station, Antarctica from 2014b and contemporary changes for
+  Egypt from 2014c.
+
+
+1.65    2014-03-09
+
+- This release is based on version 2014a of the Olson database. This release
+  includes contemporary changes for Turkey.
+
+
+1.64    2014-02-07
+
+- Under taint mode, DateTime::TimeZone->new( name => 'local' ) could die
+  depending on the method used to find the local time zone name. The resulting
+  variable would often be tainted. We now untaint all names before attempting
+  to load them. Reported by Stevie-O. RT #92631.
+
+
 1.63    2013-10-28
 
 - This release is based on version 2013h of the Olson database. This release

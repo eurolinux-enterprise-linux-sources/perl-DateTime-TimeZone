@@ -1,0 +1,54 @@
+From 4100d95d3af754ac17c8d04c5fb76c726c78c3ee Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Mon, 10 Jul 2017 17:47:47 +0200
+Subject: [PATCH] Adjust tests to time zone data 2017b
+
+Africa/Kinshasa renamed to Africa/Lagos in upstream 1.74.
+Third Chille time zone America/Punta_Arenas added in upstream 2.10.
+---
+ t/04local.t   | 6 +++---
+ t/15catalog.t | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/t/04local.t b/t/04local.t
+index 4969f86..53ffabc 100644
+--- a/t/04local.t
++++ b/t/04local.t
+@@ -73,12 +73,12 @@ local $ENV{TZ} = undef;
+ }
+ 
+ {
+-    local $ENV{TZ} = 'Africa/Kinshasa';
++    local $ENV{TZ} = 'Africa/Lagos';
+ 
+     my $tz = DateTime::TimeZone::Local::Unix->FromEnv();
+     is(
+-        $tz->name(), 'Africa/Kinshasa',
+-        'tz object name() is Africa::Kinshasa'
++        $tz->name(), 'Africa/Lagos',
++        'tz object name() is Africa::Lagos'
+     );
+ 
+     local $ENV{TZ} = 0;
+diff --git a/t/15catalog.t b/t/15catalog.t
+index 2246253..0102898 100644
+--- a/t/15catalog.t
++++ b/t/15catalog.t
+@@ -97,11 +97,11 @@ use DateTime::TimeZone;
+ 
+ {
+     my @zones = DateTime::TimeZone->names_in_country('cl');
+-    is( @zones, 2, 'two zones for Chile' );
++    is( @zones, 3, 'two zones for Chile' );
+     is_deeply(
+         [ sort @zones ],
+-        [ 'America/Santiago', 'Pacific/Easter' ],
+-        'zones for Chile are America/Santiago and Pacific/Easter'
++        [ 'America/Punta_Arenas', 'America/Santiago', 'Pacific/Easter' ],
++        'zones for Chile are America/Punta_Arenas, America/Santiago, and Pacific/Easter'
+     );
+ }
+ 
+-- 
+1.8.3.1
+

@@ -1,11 +1,5 @@
 package DateTime::TimeZone::OffsetOnly;
-{
-  $DateTime::TimeZone::OffsetOnly::VERSION = '1.63';
-}
-BEGIN {
-  $DateTime::TimeZone::OffsetOnly::AUTHORITY = 'cpan:DROLSKY';
-}
-
+$DateTime::TimeZone::OffsetOnly::VERSION = '1.70';
 use strict;
 use warnings;
 
@@ -81,13 +75,15 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 DateTime::TimeZone::OffsetOnly - A DateTime::TimeZone object that just contains an offset
 
 =head1 VERSION
 
-version 1.63
+version 1.70
 
 =head1 SYNOPSIS
 
@@ -128,7 +124,7 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Dave Rolsky.
+This software is copyright (c) 2014 by Dave Rolsky.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

@@ -1,52 +1,56 @@
+# Regenerate Perl library code from upstream Olson database of this date
+%global tzversion 2017b
+
 Name:           perl-DateTime-TimeZone
-Version:        1.63
-Release:        2%{?dist}
+Version:        1.70
+Release:        1%{?dist}
 Summary:        Time zone object base class and factory
-License:        GPL+ or Artistic
+# tzdata%%{tzversion}.tar.gz archive:   Public Domain
+# other files:                          GPL+ or Artistic
+License:        (GPL+ or Artistic) and Public Domain
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/DateTime-TimeZone/
-Source0:        http://www.cpan.org/authors/id/D/DR/DROLSKY/DateTime-TimeZone-%{version}.tar.gz
+Source0:        http://backpan.perl.org/authors/id/D/DR/DROLSKY/DateTime-TimeZone-%{version}.tar.gz
+%if %{defined tzversion}
+Source1:        ftp://ftp.iana.org/tz/releases/tzdata%{tzversion}.tar.gz
+%endif
+# Do not use List::AllUtils in parse_olson tool, bug #1101251
+Patch0:         DateTime-TimeZone-1.70-Use-List-Util-max-directly-instead-of-List-AllUtils-.patch
+# Preserve DateTime-TimeZone version in regenerated modules, bug #1101251
+Patch1:         DateTime-TimeZone-1.70-Inject-DT-TZ-version-when-generating-modules.patch
+# Adjust tests to 2017b, bug #1101251, in upstream 2.10
+Patch2:         DateTime-TimeZone-1.70-Adjust-tests-to-time-zone-data-2017b.patch
+# Adjust conversion script to 2017b, bug #1101251, in upstream 1.96
+Patch3:         DateTime-TimeZone-1.70-Recognize-short-zone-names-starting-with-a-sign.patch
 BuildArch:      noarch
+BuildRequires:  findutils
+BuildRequires:  make
 BuildRequires:  perl
-BuildRequires:  perl(base)
+BuildRequires:  perl(ExtUtils::MakeMaker) >= 6.30
+BuildRequires:  perl(strict)
+BuildRequires:  perl(warnings)
+%if !%{defined perl_bootstrap} && %{defined tzversion}
+# avoid circular dependencies - DateTime strictly requires DateTime::TimeZone
+BuildRequires:  perl(Data::Dumper)
+BuildRequires:  perl(DateTime)
+BuildRequires:  perl(File::Copy)
+BuildRequires:  perl(File::Find::Rule)
+BuildRequires:  perl(File::Path)
+BuildRequires:  perl(File::Spec)
+BuildRequires:  perl(Getopt::Long)
+BuildRequires:  perl(integer)
 BuildRequires:  perl(lib)
+BuildRequires:  perl(List::Util)
+BuildRequires:  perl(Locale::Country) >= 3.11
+%endif
+# Run-time:
 BuildRequires:  perl(Class::Load)
 BuildRequires:  perl(Class::Singleton) >= 1.03
 BuildRequires:  perl(constant)
 BuildRequires:  perl(Cwd) >= 3
-BuildRequires:  perl(ExtUtils::MakeMaker)
-BuildRequires:  perl(File::Basename)
-BuildRequires:  perl(File::Compare)
-BuildRequires:  perl(File::Copy)
-BuildRequires:  perl(File::Spec)
-BuildRequires:  perl(List::Util)
-BuildRequires:  perl(overload)
-BuildRequires:  perl(Params::Validate) >= 0.72
-BuildRequires:  perl(parent)
-BuildRequires:  perl(Test::More) >= 0.88
-BuildRequires:  perl(Test::Output)
-BuildRequires:  perl(Storable)
-BuildRequires:  perl(strict)
-BuildRequires:  perl(Sys::Hostname)
-BuildRequires:  perl(vars)
-BuildRequires:  perl(warnings)
-# not automatically detected
-Requires:       perl(File::Compare)
-Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
-
-%{?filter_setup:
-%filter_from_requires /^perl(Win32/d
-%if 0%{?perl_bootstrap}
-%filter_from_requires /^perl(DateTime\(::Duration\)?)/d
-%endif
-%?perl_default_filter}
-
-%global __requires_exclude %{__requires_exclude}|perl\\(Params::Validate\\)$|perl\\(Class::Singleton\\)$
-
 %if 0%{?perl_bootstrap}
 # avoid circular dependencies - DateTime strictly requires DateTime::TimeZone
-%global __requires_exclude %{?__requires_exclude:%__requires_exclude|}perl\\(DateTime\\)
-%global __requires_exclude %{__requires_exclude}|perl\\(DateTime::Duration\\)
+%global __requires_exclude %{?__requires_exclude:%__requires_exclude|}^perl\\((DateTime|DateTime::Duration)\\)
 # perl-DateTime-TimeZone used to be bundled with perl-DateTime
 # when bootstrapping, we can't require the unbundled version, so
 # need to conflict with the old package
@@ -58,6 +62,39 @@ Requires:       perl-DateTime >= 2:0.70-1
 BuildRequires:  perl(DateTime)
 BuildRequires:  perl(DateTime::Duration)
 %endif
+BuildRequires:  perl(File::Basename)
+BuildRequires:  perl(File::Compare)
+BuildRequires:  perl(File::Find)
+BuildRequires:  perl(File::Spec)
+BuildRequires:  perl(List::Util)
+BuildRequires:  perl(Params::Validate) >= 0.72
+BuildRequires:  perl(parent)
+BuildRequires:  perl(vars)
+# Win32::TieRegistry not used
+# Tests:
+BuildRequires:  perl(base)
+BuildRequires:  perl(File::Copy)
+BuildRequires:  perl(File::Path)
+BuildRequires:  perl(File::Spec::Functions)
+BuildRequires:  perl(File::Temp)
+BuildRequires:  perl(lib)
+BuildRequires:  perl(overload)
+BuildRequires:  perl(Storable)
+BuildRequires:  perl(Sys::Hostname)
+BuildRequires:  perl(Test::Fatal)
+BuildRequires:  perl(Test::More) >= 0.88
+BuildRequires:  perl(Test::Output)
+BuildRequires:  perl(Test::Requires)
+BuildRequires:  perl(Test::Taint)
+# not automatically detected
+Requires:       perl(File::Compare)
+Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+
+# Remove non-Linux unused dependencies
+%global __requires_exclude %{?__requires_exclude:%{__requires_exclude}|}^perl\\(Win32
+
+# Remove under-specified dependencies
+%global __requires_exclude %{?__requires_exclude:%{__requires_exclude}|}^perl\\((Params::Validate|Class::Singleton)\\)$
 
 %description
 This class is the base class for all time zone objects. A time zone is
@@ -65,17 +102,26 @@ represented internally as a set of observances, each of which describes the
 offset from GMT for a given time period.
 
 %prep
-%setup -q -n DateTime-TimeZone-%{version}
+%if !%{defined perl_bootstrap} && %{defined tzversion}
+%setup -q -T -a 1 -c -n tzdata-%{tzversion}
+%endif
+%setup -q -T -b 0 -n DateTime-TimeZone-%{version}
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
+%if !%{defined perl_bootstrap} && %{defined tzversion}
+perl tools/parse_olson --dir ../tzdata-%{tzversion} --version %{tzversion} \
+    --dttzversion %{version} --clean
+%endif
 %{__perl} Makefile.PL INSTALLDIRS=vendor
 make %{?_smp_mflags}
 
 %install
 make pure_install DESTDIR=%{buildroot}
-
-find %{buildroot} -type f -name .packlist -exec rm -f {} \;
-
+find %{buildroot} -type f -name .packlist -delete
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -87,6 +133,14 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jul 10 2017 Petr Pisar <ppisar@redhat.com> - 1.70-1
+- 1.70 bump (bug #1101251)
+- Regenerate Perl code from timezone sources (bug #1101251)
+- Update time zone data to Olson 2017b (bug #1101251)
+
+* Thu Oct 06 2016 Petr Pisar <ppisar@redhat.com> - 1.64-1
+- 1.64 bump (bug #1241818)
+
 * Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.63-2
 - Mass rebuild 2013-12-27
 
