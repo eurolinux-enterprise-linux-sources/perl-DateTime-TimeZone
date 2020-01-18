@@ -1,9 +1,9 @@
 # Regenerate Perl library code from upstream Olson database of this date
-%global tzversion 2017b
+%global tzversion 2018i
 
 Name:           perl-DateTime-TimeZone
 Version:        1.70
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Time zone object base class and factory
 # tzdata%%{tzversion}.tar.gz archive:   Public Domain
 # other files:                          GPL+ or Artistic
@@ -22,6 +22,8 @@ Patch1:         DateTime-TimeZone-1.70-Inject-DT-TZ-version-when-generating-modu
 Patch2:         DateTime-TimeZone-1.70-Adjust-tests-to-time-zone-data-2017b.patch
 # Adjust conversion script to 2017b, bug #1101251, in upstream 1.96
 Patch3:         DateTime-TimeZone-1.70-Recognize-short-zone-names-starting-with-a-sign.patch
+# Adjust a conversion script to 2018f, bug #1537984, in upstream 2.20
+Patch4:         DateTime-TimeZone-1.70-Recognize-25-00-time.patch
 BuildArch:      noarch
 BuildRequires:  findutils
 BuildRequires:  make
@@ -110,6 +112,7 @@ offset from GMT for a given time period.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 %if !%{defined perl_bootstrap} && %{defined tzversion}
@@ -133,6 +136,9 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+* Thu Jan 17 2019 Petr Pisar <ppisar@redhat.com> - 1.70-2
+- Update time zone data to Olson 2018i (bug #1537984)
+
 * Mon Jul 10 2017 Petr Pisar <ppisar@redhat.com> - 1.70-1
 - 1.70 bump (bug #1101251)
 - Regenerate Perl code from timezone sources (bug #1101251)

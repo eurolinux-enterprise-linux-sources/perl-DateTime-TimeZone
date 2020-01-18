@@ -1,0 +1,35 @@
+From 4241f291ff4d9779896464b51727e84d38cb2c1c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Thu, 17 Jan 2019 08:11:43 +0100
+Subject: [PATCH] Recognize 25:00 time
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+2018f changed format and some time zones like Asia/Tokyo use 25:00
+value for AT attribute. A conversion script from
+DateTime-TimeZones-2.20 added support for this syntax.
+
+Signed-off-by: Petr Písař <ppisar@redhat.com>
+---
+ lib/DateTime/TimeZone/OlsonDB.pm | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/DateTime/TimeZone/OlsonDB.pm b/lib/DateTime/TimeZone/OlsonDB.pm
+index 1ea6a5a..24fc83c 100644
+--- a/lib/DateTime/TimeZone/OlsonDB.pm
++++ b/lib/DateTime/TimeZone/OlsonDB.pm
+@@ -253,8 +253,8 @@ sub utc_datetime_for_time_spec {
+     $second = 0 unless defined $second;
+ 
+     my $add_day = 0;
+-    if ( $hour == 24 ) {
+-        $hour    = 0;
++    if ( $hour >= 24 ) {
++        $hour    = $hour - 24;
+         $add_day = 1;
+     }
+ 
+-- 
+2.17.2
+
